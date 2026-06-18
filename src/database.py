@@ -9,9 +9,9 @@ def init_db():
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS files (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        path TEXT,
+        path TEXT UNIQUE,
         size INTEGER,
-        modified_time TEXT,
+        modif_time TEXT,
         file_type TEXT,
         hash TEXT
     )
@@ -20,4 +20,28 @@ def init_db():
     conn.commit()
     conn.close()
 
-    print("База данных создана")
+
+def clear_files():
+    conn = sqlite3.connect("file_index.db")
+
+    cursor = conn.cursor()
+
+    cursor.execute("DELETE FROM files")
+
+    conn.commit()
+    conn.close()
+
+
+def save_file(path, size, modif_time, file_type):
+    conn = sqlite3.connect("file_index.db")
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        INSERT OR REPLACE INTO files
+        (path, size, modif_time, file_type)
+        VALUES (?, ?, ?, ?)
+    """, (path, size, modif_time, file_type))
+
+    conn.commit()
+    conn.close()

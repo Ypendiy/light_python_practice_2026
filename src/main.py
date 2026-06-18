@@ -1,5 +1,8 @@
 import sys
+import os
 from database import init_db
+from database import clear_files
+from scanner import scan_folder
 
 
 def main():
@@ -10,9 +13,26 @@ def main():
 
     folder = sys.argv[1]
 
-    print("Путь к папке:", folder)
+    if not os.path.exists(folder):
+        print("Ошибка: путь не существует")
+        return
+
+    if not os.path.isdir(folder):
+        print("Ошибка: указан не каталог")
+        return
+
+    filter = None
+
+    if len(sys.argv) >= 3:
+        filter = sys.argv[2]
+
+    print("Папка:", folder)
 
     init_db()
+
+    clear_files()
+
+    scan_folder(folder, filter)
 
 
 if __name__ == "__main__":
