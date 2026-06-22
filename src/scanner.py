@@ -1,6 +1,23 @@
 import os
-
+import hashlib
 from database import save_file
+
+def poluchit_hesh(put_k_file):
+
+    sha256 = hashlib.sha256()
+
+    with open(put_k_file, "rb") as file:
+
+        while True:
+
+            block = file.read(4096)
+
+            if not block:
+                break
+
+            sha256.update(block)
+
+    return sha256.hexdigest()
 
 
 def scan_folder(folder_path, filter=None):
@@ -24,6 +41,8 @@ def scan_folder(folder_path, filter=None):
 
             file_type = os.path.splitext(file)[1]
 
+            hash_value = poluchit_hesh(put_k_file)
+
             put = os.path.relpath(put_k_file, folder_path)
 
             print(
@@ -36,7 +55,8 @@ def scan_folder(folder_path, filter=None):
                 put,
                 size,
                 str(modif_time),
-                file_type
+                file_type,
+	hash_value
             )
 
             count += 1

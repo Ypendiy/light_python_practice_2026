@@ -3,6 +3,7 @@ import os
 from database import init_db
 from database import clear_files
 from scanner import scan_folder
+from database import show_duplicates
 
 
 def main():
@@ -33,6 +34,7 @@ def main():
     clear_files()
 
     scan_folder(folder, filter)
+    show_duplicates()
 
 
 if __name__ == "__main__":
