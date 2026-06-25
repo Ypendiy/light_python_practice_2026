@@ -1,6 +1,5 @@
 import sqlite3
 
-
 def init_db():
 
     conn = sqlite3.connect("file_index.db")
@@ -15,6 +14,16 @@ def init_db():
         modif_time TEXT,
         file_type TEXT,
         hash TEXT
+    )
+    """)
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS checks (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        check_time TEXT,
+        missing_files INTEGER,
+        changed_files INTEGER,
+        extra_files INTEGER
     )
     """)
 
@@ -76,7 +85,7 @@ def show_duplicates():
         conn.close()
         return
 
-    print("\n ДУБЛИКАТЫ")
+    print("\n=== ДУБЛИКАТЫ ===")
 
     for duplicate in duplicates:
 
@@ -94,5 +103,59 @@ def show_duplicates():
 
         for file in files:
             print(file[0])
+
+    conn.close()
+
+
+def save_check(missing_count, changed_count, extra_count):
+
+    conn = sqlite3.connect("file_index.db")
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        INSERT INTO checks
+        (check_time, missing_files, changed_files, extra_files)
+        VALUES (
+            datetime('now'),
+            ?,
+            ?,
+            ?
+        )
+    """, (
+        missing_count,
+        changed_count,
+        extra_count
+    ))
+
+    conn.commit()
+    conn.close()
+
+
+def show_checks():
+
+    conn = sqlite3.connect("file_index.db")
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT *
+        FROM checks
+        ORDER BY id DESC
+    """)
+
+    checks = cursor.fetchall()
+
+    print("\n=== ИСТОРИЯ ПРОВЕРОК ===")
+
+    for check in checks:
+
+        print(
+            f"Проверка №{check[0]} | "
+            f"Дата: {check[1]} | "
+            f"Отсутствуют: {check[2]} | "
+            f"Изменены: {check[3]} | "
+            f"Лишние: {check[4]}"
+        )
 
     conn.close()
