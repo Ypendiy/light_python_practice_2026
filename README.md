@@ -4,7 +4,7 @@
 
 Использовать:
 
-py main.py test backup
+py main.py --backup test backup
 
 Пример результата:
 

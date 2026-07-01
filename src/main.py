@@ -11,14 +11,10 @@ def main():
 
     init_db()
 
-    if len(sys.argv) < 2:
-        print("Укажите путь к папке")
-        return
+    if len(sys.argv) == 4 and sys.argv[1] == "--backup":
 
-    if len(sys.argv) == 3:
-
-        source_folder = sys.argv[1]
-        backup_folder = sys.argv[2]
+        source_folder = sys.argv[2]
+        backup_folder = sys.argv[3]
 
         if not os.path.isdir(source_folder):
             print("Первая папка не существует")
@@ -28,11 +24,11 @@ def main():
             print("Вторая папка не существует")
             return
 
-        compare_folders(
-            source_folder,
-            backup_folder
-        )
+        compare_folders(source_folder, backup_folder)
+        return
 
+    if len(sys.argv) < 2:
+        print("Укажите путь к папке")
         return
 
     folder = sys.argv[1]
@@ -45,11 +41,16 @@ def main():
         print("Ошибка: указан не каталог")
         return
 
+    filter = None
+
+    if len(sys.argv) >= 3:
+        filter = sys.argv[2]
+
     print("Папка:", folder)
 
     clear_files()
 
-    scan_folder(folder)
+    scan_folder(folder, filter)
 
     show_duplicates()
 
